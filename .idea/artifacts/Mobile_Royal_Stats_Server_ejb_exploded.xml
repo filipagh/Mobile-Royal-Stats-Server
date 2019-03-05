@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-ejb" name="Mobile-Royal-Stats-Server:ejb exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/Mobile_Royal_Stats_Server_ejb_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="Mobile-Royal-Stats-Server/ejb/EJB" />
+      <element id="module-output" name="Mobile-Royal-Stats-Server" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-ear" name="Mobile-Royal-Stats-Server:ear exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/Mobile_Royal_Stats_Server_ear_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="Mobile-Royal-Stats-Server/javaeeApplication/javaEEApplication" />
+      <element id="directory" name="ejb.jar">
+        <element id="artifact" artifact-name="Mobile-Royal-Stats-Server:ejb exploded" />
+      </element>
+      <element id="directory" name="lib">
+        <element id="library" level="project" name="javax.json.binding-1.0" />
+      </element>
+    </root>
+  </artifact>
+</component>
