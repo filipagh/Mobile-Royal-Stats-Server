@@ -1,19 +1,24 @@
-import javax.ws.rs.GET
-import javax.ws.rs.Path
-import javax.ws.rs.PathParam
-import javax.ws.rs.QueryParam
+import royal.PlayerI
+import javax.ejb.EJB
+import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
 
 @Path("/hraci")
-class Hraci {
+open class Hraci {
+
+    @EJB
+    private lateinit var hraci: PlayerI
+
     @GET
     @Path("/sayHello")
-    fun sayHello(): String {
+    open fun sayHello(): String {
         return "<h1>Hello World</h1>"
     }
 
     @GET
-    @Path("/ids/{id}")
-    fun info(@PathParam("id") id : Int): String {
-        return "<h1>Hello World $id</h1>"
+    @Path("/info/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    open fun info(@PathParam("id") id : String): String {
+        return hraci.dajHraca(id)
     }
 }
