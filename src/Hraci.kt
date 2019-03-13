@@ -21,4 +21,6 @@ open class Hraci {
     open fun info(@PathParam("id") id : String): String {
         return hraci.dajHraca(id)
     }
+
+
 }
