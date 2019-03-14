@@ -7,6 +7,8 @@ import javax.ws.rs.core.MediaType
 open class Hraci {
 
     @EJB
+
+
     private lateinit var hraci: PlayerI
 
     @GET
@@ -18,9 +20,8 @@ open class Hraci {
     @GET
     @Path("/info/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    open fun info(@PathParam("id") id : String): String {
+    open fun info(@PathParam("id") id: String): String {
         return hraci.dajHraca(id)
+
     }
-
-
 }
