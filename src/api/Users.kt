@@ -3,6 +3,8 @@ package api
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import model.User
+import utils.auth.Auth
+import utils.auth.Role
 import javax.annotation.Resource
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
@@ -41,10 +43,25 @@ open class Users {
         if (!violations.isEmpty()) {
            throw ApiException(400, "ZLE")
         }
+
         user.id = null
-        userTransaction.begin()
-        manager.persist(user)
-        userTransaction.commit()
+        //TODO setovat spravnu rolu
+        user.role= Role.User
+        val auth = Auth()
+        auth.authCreateUserPasswordHash(user)
+        auth.authCreateUserApiKey(user)
+
+        // ulozime usra do db a akceptujeme ho
+        try {
+            userTransaction.begin()
+            manager.persist(user)
+            userTransaction.commit()
+        } catch (e: Exception) {
+            throw ApiException(400,"Duplicate entry")
+        }
+        // fild co nechceme vracat
+        user.salt=null
+        user.password=null
         return user
     }
 

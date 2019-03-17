@@ -22,9 +22,11 @@ class User : Serializable {
     var name: String? = null
     var gameId: String? = null
 //    @UniqueConstraint(name="email")
+
     @Email
     @NotEmpty
     @NotNull
+    @Column(unique=true)
     lateinit var email: String
 
     @NotNull(message = "Name cannot be null")
