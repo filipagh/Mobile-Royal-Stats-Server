@@ -20,8 +20,6 @@ open class Users {
 
     @PersistenceContext(unitName = "sql")
     private lateinit var manager: EntityManager
-//    @PersistenceContext(unitName = "sql")
-//    private lateinit var session: Session
 
     @Resource
     private lateinit var userTransaction: UserTransaction

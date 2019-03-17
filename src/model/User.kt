@@ -1,5 +1,6 @@
 package model
 
+import utils.auth.Role
 import java.io.Serializable
 import javax.persistence.*
 import javax.validation.constraints.Email
@@ -7,8 +8,12 @@ import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
 @Entity
-@Table(name="users")
+@Table(name= "users")
 class User : Serializable {
+
+    companion object {
+        val DB_NAME = "user"
+    }
 
     @Id
     @javax.persistence.GeneratedValue(strategy = GenerationType.AUTO, generator = "users_id")
@@ -16,8 +21,6 @@ class User : Serializable {
     var id: Int? = null
     var name: String? = null
     var gameId: String? = null
-    var role: String? = null
-
 //    @UniqueConstraint(name="email")
     @Email
     @NotEmpty
@@ -29,5 +32,7 @@ class User : Serializable {
     var password: String? = null
     var salt: String? = null
     var apiKey: String? = null
+    var role: Role? = null
 
 }
+
