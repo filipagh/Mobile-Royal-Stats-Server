@@ -1,7 +1,9 @@
 import model.User
 import utils.auth.*
-import utils.dbJPAQuery
-import utils.dbSave
+import javax.annotation.Resource
+import javax.persistence.EntityManager
+import javax.persistence.PersistenceContext
+import javax.transaction.UserTransaction
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
@@ -9,6 +11,13 @@ import javax.ws.rs.core.Response
 
 @Path("/u")
 open class AuthenticationEndpoint {
+
+    @PersistenceContext(unitName = "sql")
+    private lateinit var manager: EntityManager
+
+
+    @Resource
+    private lateinit var userTransaction: UserTransaction
 
     @POST
     @Path("/authentication")
@@ -42,19 +51,22 @@ open class AuthenticationEndpoint {
     @Throws(Exception::class)
     private fun authenticate(username: String, password: String): User {
 
-        if (username.isEmpty() and password.isEmpty())
+        if (username.isEmpty() or password.isEmpty())
         {
             throw Exception("name or pass is empty")
         }
 
         // pokusime sa najst usera
         val select = "Select u from User u WHERE u.name = \'$username\'"
-        val resultList = dbJPAQuery(select)
+        val response = manager.createQuery(select)
+        val resultList = response.resultList
 
+
+        val auth = Auth()
         for (item in resultList!!)
         {
             val dbUser: User = item as User
-            if(authValidatePassword(password,dbUser))
+            if(auth.authValidatePassword(password,dbUser))
             {
                 return dbUser  // we find user and password is OK (auth OK)
             }
@@ -66,12 +78,14 @@ open class AuthenticationEndpoint {
         user.name = username
         user.password=password
         //TODO setovat spravnu rolu
-        user.role=Role.Leader
-        authCreateUserPasswordHash(user)
-        authCreateUserApiKey(user)
+        user.role=Role.User
+        auth.authCreateUserPasswordHash(user)
+        auth.authCreateUserApiKey(user)
 
         // ulozime usra do db a akceptujeme ho
-        dbSave(user)
+        userTransaction.begin()
+        manager.persist(user)
+        userTransaction.commit()
 
         return user
     }

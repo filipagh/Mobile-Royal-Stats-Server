@@ -2,20 +2,16 @@ package utils.auth
 
 
 import com.google.common.net.HttpHeaders
-import model.User
 import java.io.IOException
 import java.lang.reflect.AnnotatedElement
-import java.security.Principal
 import java.util.*
 import javax.annotation.Priority
-import javax.inject.Inject
 import javax.ws.rs.Priorities
 import javax.ws.rs.container.ContainerRequestContext
 import javax.ws.rs.container.ContainerRequestFilter
 import javax.ws.rs.container.ResourceInfo
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
-import javax.ws.rs.core.SecurityContext
 import javax.ws.rs.ext.Provider
 
 
@@ -23,8 +19,7 @@ import javax.ws.rs.ext.Provider
 //@AuthenticatedUser
 //var userAuthenticatedEvent: Event? = null
 
-private val REALM = "rest/authentication"
-val AUTHENTICATION_SCHEME = "Bearer"
+const val AUTHENTICATION_SCHEME = "Bearer"
 
 @Secured
 @Provider
@@ -98,13 +93,9 @@ open class AuthorizationFilter: ContainerRequestFilter {
 
     private fun abortWithUnauthorized(requestContext: ContainerRequestContext) {
 
-        // Abort the filter chain with a 401 status code response
-        // The WWW-Authenticate header is sent along with the response
+        // request neobsahuje nas API token
         requestContext.abortWith(
-                Response.status(Response.Status.UNAUTHORIZED)
-                        .header(HttpHeaders.WWW_AUTHENTICATE,
-                                "$AUTHENTICATION_SCHEME realm=\"$REALM\"")
-                        .build())
+                Response.status(Response.Status.UNAUTHORIZED).build())
     }
 
     // Extract the roles from the annotated element
@@ -124,14 +115,18 @@ open class AuthorizationFilter: ContainerRequestFilter {
 
     @Throws(Exception::class)
     private fun checkPermissions(allowedRoles: List<Role>,apiKey: String) {
-        aut
-        val user = User()
-        if (user.role in allowedRoles)
-        {
 
+        // neviem preco to chyti auth aj ked endpoint je bez @secure
+        if (allowedRoles.isEmpty())
+        {
+            return
         }
 
-        //userAuthenticatedEvent.fire(username);
+        val auth = Auth()
+        if (!auth.authCheckUserRolePermission(apiKey,allowedRoles))
+        {
+            throw Exception()
+        }
 
         //throw Exception()
         // Check if the user contains one of the allowed roles
