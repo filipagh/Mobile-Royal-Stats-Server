@@ -1,0 +1,15 @@
+# Created by .ignore support plugin (hsz.mobi)
+lib/
+.idea/dataSources.local.xml
+.idea/httpRequests/
+.idea/libraries/Maven__org_jetbrains_annotations_13_0.xml
+.idea/libraries/Maven__org_jetbrains_kotlin_kotlin_stdlib_1_3_21.xml
+.idea/libraries/Maven__org_jetbrains_kotlin_kotlin_stdlib_common_1_3_21.xml
+.idea/libraries/Maven__org_jetbrains_kotlin_kotlin_stdlib_jdk7_1_3_21.xml
+.idea/libraries/Maven__org_jetbrains_kotlin_kotlin_stdlib_jdk8_1_3_21.xml
+.idea/libraries/Maven__org_jetbrains_kotlin_kotlin_test_1_3_21.xml
+.idea/libraries/Maven__org_jetbrains_kotlin_kotlin_test_common_1_3_21.xml
+.idea/libraries/cdi_api.xml
+.idea/workspace.xml
+out/
+target/

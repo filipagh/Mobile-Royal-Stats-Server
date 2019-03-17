@@ -21,8 +21,6 @@ class User : Serializable {
     var id: Int? = null
     var name: String? = null
     var gameId: String? = null
-    var role: String? = null
-
 //    @UniqueConstraint(name="email")
     @Email
     @NotEmpty
