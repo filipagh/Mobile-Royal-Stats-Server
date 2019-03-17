@@ -20,6 +20,7 @@
           <element id="library" level="project" name="org.mindrot:jbcrypt:0.4" />
         </element>
       </element>
+      <element id="dir-copy" path="$PROJECT_DIR$/src/META-INF" />
     </root>
   </artifact>
 </component>
