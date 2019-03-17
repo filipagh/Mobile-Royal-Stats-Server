@@ -37,10 +37,12 @@ open class AuthorizationFilter: ContainerRequestFilter {
     @Throws(IOException::class)
     override fun filter(requestContext: ContainerRequestContext) {
 
-        val authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)
-
-        if (authorizationHeader.isNullOrEmpty()) {
+        val authorizationHeader: String
+        try {
+            authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)
+        } catch (exception: IllegalStateException) {
             abortWithUnauthorized(requestContext)
+            return
         }
 
         // Extract the token from the Authorization header

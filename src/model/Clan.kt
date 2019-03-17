@@ -6,7 +6,6 @@ import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
 @Entity
-@Table(name="clans")
 class Clan : Serializable {
 
     @Id
@@ -20,7 +19,7 @@ class Clan : Serializable {
     @NotEmpty
     var gameId: String? = null
 
-    @OneToMany
+    @OneToMany()
     var users : MutableSet<User> = HashSet()
 
     @OneToMany
