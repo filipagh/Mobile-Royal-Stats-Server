@@ -34,9 +34,6 @@ open fun info(@PathParam("id") id: String,@HeaderParam("Authorization") apiKey: 
     val token = apiKey.substring(AUTHENTICATION_SCHEME.length).trim()
 
 
-//        val a = securityContext.userPrincipal.name
-    return "<h1>$token</h1>"
-    return hraci.dajHraca(id)
 
 }
 */
@@ -57,8 +54,7 @@ open fun info(@PathParam("id") id: String,@HeaderParam("Authorization") apiKey: 
 
     fun authCheckUserRolePermission(apiKey: String, allowedRoles: List<Role>): Boolean {
         val user = findUserByApiKey(apiKey)
-        val pass = user.role in allowedRoles
-        return pass
+        return user.role in allowedRoles
     }
 
 

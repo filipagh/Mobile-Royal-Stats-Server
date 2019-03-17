@@ -52,13 +52,13 @@ open class Users {
         auth.authCreateUserApiKey(user)
 
         // ulozime usra do db a akceptujeme ho
-        try {
+//        try {
             userTransaction.begin()
             manager.persist(user)
             userTransaction.commit()
-        } catch (e: Exception) {
-            throw ApiException(400,"Duplicate entry")
-        }
+//        } catch (e: Exception) {
+//            throw ApiException(400,"Duplicate entry")
+//        }
         // fild co nechceme vracat
         user.salt=null
         user.password=null

@@ -14,13 +14,6 @@ import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.Provider
 
-
-//@Inject
-//@AuthenticatedUser
-//var userAuthenticatedEvent: Event? = null
-
-const val AUTHENTICATION_SCHEME = "Bearer"
-
 @Secured
 @Provider
 @Priority(Priorities.AUTHORIZATION)
@@ -42,15 +35,12 @@ open class AuthorizationFilter: ContainerRequestFilter {
 
         val authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)
 
-        if (!isTokenBasedAuthentication(authorizationHeader)) {
+        if (authorizationHeader.isNullOrEmpty()) {
             abortWithUnauthorized(requestContext)
-            return
         }
 
         // Extract the token from the Authorization header
-        val token = authorizationHeader
-                .substring(AUTHENTICATION_SCHEME.length).trim()
-
+        val token = authorizationHeader.trim()
 
         // Get the resource class which matches with the requested URL
         // Extract the roles declared by it
@@ -87,8 +77,7 @@ open class AuthorizationFilter: ContainerRequestFilter {
         // Check if the Authorization header is valid
         // It must not be null and must be prefixed with "Bearer" plus a whitespace
         // The authentication scheme comparison must be case-insensitive
-        return authorizationHeader != null && authorizationHeader.toLowerCase()
-                .startsWith(AUTHENTICATION_SCHEME.toLowerCase() + " ")
+        return authorizationHeader != null
     }
 
     private fun abortWithUnauthorized(requestContext: ContainerRequestContext) {
