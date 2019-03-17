@@ -3,9 +3,10 @@ package api
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import model.User
-import utils.auth.Auth
+import utils.auth.AuthUtilsI
 import utils.auth.Role
 import javax.annotation.Resource
+import javax.ejb.EJB
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 import javax.transaction.UserTransaction
@@ -25,6 +26,9 @@ open class Users {
 
     @Resource
     private lateinit var userTransaction: UserTransaction
+
+    @EJB
+    private lateinit var auth : AuthUtilsI
 
     @GET
     @Path("/sayHello")
@@ -47,9 +51,8 @@ open class Users {
         user.id = null
         //TODO setovat spravnu rolu
         user.role= Role.User
-        val auth = Auth()
-        auth.authCreateUserPasswordHash(user)
-        auth.authCreateUserApiKey(user)
+        auth.createUserPasswordHash(user)
+        auth.createUserApiKey(user)
 
         // ulozime usra do db a akceptujeme ho
 //        try {

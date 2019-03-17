@@ -1,6 +1,7 @@
 import model.User
 import utils.auth.*
 import javax.annotation.Resource
+import javax.ejb.EJB
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 import javax.transaction.UserTransaction
@@ -18,6 +19,9 @@ open class AuthenticationEndpoint {
 
     @Resource
     private lateinit var userTransaction: UserTransaction
+
+    @EJB
+    private lateinit var auth : AuthUtilsI
 
     @POST
     @Path("/authentication")
@@ -62,11 +66,10 @@ open class AuthenticationEndpoint {
         val resultList = response.resultList
 
 
-        val auth = Auth()
         for (item in resultList!!)
         {
             val dbUser: User = item as User
-            if(auth.authValidatePassword(password,dbUser))
+            if(auth.validatePassword(password,dbUser))
             {
                 return dbUser  // we find user and password is OK (auth OK)
             }
@@ -79,8 +82,8 @@ open class AuthenticationEndpoint {
         user.password=password
         //TODO setovat spravnu rolu
         user.role=Role.User
-        auth.authCreateUserPasswordHash(user)
-        auth.authCreateUserApiKey(user)
+        auth.createUserPasswordHash(user)
+        auth.createUserApiKey(user)
 
         // ulozime usra do db a akceptujeme ho
         userTransaction.begin()

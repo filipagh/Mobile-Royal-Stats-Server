@@ -2,19 +2,15 @@ package utils.auth
 
 import model.User
 import org.mindrot.jbcrypt.BCrypt
+import javax.ejb.Stateless
 import javax.persistence.EntityManager
-import javax.persistence.Persistence
+import javax.persistence.PersistenceContext
 
-open class Auth {
+@Stateless
+open class AuthUtils : AuthUtilsI {
 
-
-    private var manager: EntityManager
-
-    init
-    {
-        val entityManagerFactory = Persistence.createEntityManagerFactory("sql")
-        manager = entityManagerFactory.createEntityManager()
-    }
+    @PersistenceContext(unitName = "sql")
+    private lateinit var manager: EntityManager
 
 /*
  ukazka ako zabezpecit endpoint
@@ -40,7 +36,7 @@ open fun info(@PathParam("id") id: String,@HeaderParam("Authorization") apiKey: 
 
 
 
-    private fun findUserByApiKey(apiKey: String): User {
+    override fun findUserByApiKey(apiKey: String): User {
 
         val select = "Select u from User u WHERE u.apiKey = \'$apiKey\'"
         val response = manager.createQuery(select)
@@ -52,39 +48,41 @@ open fun info(@PathParam("id") id: String,@HeaderParam("Authorization") apiKey: 
     }
 
 
-    fun authCheckUserRolePermission(apiKey: String, allowedRoles: List<Role>): Boolean {
+    override fun checkUserRolePermission(apiKey: String, allowedRoles: List<Role>): Boolean {
         val user = findUserByApiKey(apiKey)
         return user.role in allowedRoles
     }
 
 
-    fun authCreateUserPasswordHash(user: User) {
+    override fun createUserPasswordHash(user: User) : User {
         //TODO otestovt null pass aj ""
         if (user.password.isNullOrEmpty()) {
             throw Exception("user password is empty!!!")
         }
         user.salt = BCrypt.gensalt()
         user.password = BCrypt.hashpw(user.password, user.salt)
+        return user
     }
 
-    fun authCreateUserApiKey(user: User) {
+    override fun createUserApiKey(user: User) : User {
         //TODO kontrola validnosti casova api kluca
 
         if (user.apiKey.isNullOrEmpty()) {
             user.apiKey = BCrypt.gensalt(15)
         }
+        return user
     }
 
 
-    fun createPasswordHash(password: String, salt: String): String {
+    override fun createPasswordHash(password: String, salt: String): String {
         //TODO otestovt null pass aj ""
-        if (password.isNullOrEmpty()) {
+        if (password.isEmpty()) {
             throw Exception("user password is empty!!!")
         }
         return BCrypt.hashpw(password, salt)
     }
 
-    fun authValidatePassword(password: String, user: User): Boolean {
+    override fun validatePassword(password: String, user: User): Boolean {
         //TODO otestovt null pass aj ""
         if (user.password.isNullOrEmpty()) {
             throw Exception("user password is empty!!!")

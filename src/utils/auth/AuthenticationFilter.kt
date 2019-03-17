@@ -6,6 +6,7 @@ import java.io.IOException
 import java.lang.reflect.AnnotatedElement
 import java.util.*
 import javax.annotation.Priority
+import javax.ejb.EJB
 import javax.ws.rs.Priorities
 import javax.ws.rs.container.ContainerRequestContext
 import javax.ws.rs.container.ContainerRequestFilter
@@ -25,6 +26,9 @@ open class AuthorizationFilter: ContainerRequestFilter {
 
     @Context
     private val resourceInfo: ResourceInfo? = null
+
+    @EJB
+    private lateinit var auth : AuthUtilsI
 
 //TODO
 
@@ -111,8 +115,7 @@ open class AuthorizationFilter: ContainerRequestFilter {
             return
         }
 
-        val auth = Auth()
-        if (!auth.authCheckUserRolePermission(apiKey,allowedRoles))
+        if (!auth.checkUserRolePermission(apiKey,allowedRoles))
         {
             throw Exception()
         }

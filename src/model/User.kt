@@ -21,18 +21,19 @@ class User : Serializable {
     var id: Int? = null
     var name: String? = null
     var gameId: String? = null
-//    @UniqueConstraint(name="email")
 
+    @Column(unique=true)
     @Email
     @NotEmpty
     @NotNull
-    @Column(unique=true)
     lateinit var email: String
 
     @NotNull(message = "Name cannot be null")
     @NotEmpty(message = "Name cannot be null")
     var password: String? = null
     var salt: String? = null
+
+    @Column(unique=true)
     var apiKey: String? = null
     var role: Role? = null
 

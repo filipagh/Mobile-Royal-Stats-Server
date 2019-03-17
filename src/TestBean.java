@@ -1,11 +1,10 @@
 import com.github.phillipkruger.apiee.ApieeService;
-import io.swagger.annotations.Contact;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.*;
 
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashSet;
@@ -15,15 +14,12 @@ import java.util.Set;
 //@Stateless(name = "TestEJB")
 //@Path("/test")
 @SwaggerDefinition(info = @Info(
-        title = "Example Service",
-        description = "A simple example of apiee",
+        title = "Mobile Royal Stats Server",
+        description = "Serverova Cast nasho mobilneho programu",
         version = "1.0.0",
-        contact = @Contact(
-                name = "Phillip Kruger",
-                email = "apiee@phillip-kruger.com",
-                url = "http://phillip-kruger.com"
-        )
-)
+        contact = @Contact(name = "Filip Agh & Martin Civan")),
+        securityDefinition =
+        @SecurityDefinition(apiKeyAuthDefinitions = @ApiKeyAuthDefinition(key = HttpHeaders.AUTHORIZATION , name="Authorization", in = ApiKeyAuthDefinition.ApiKeyLocation.HEADER))
 )
 @ApplicationPath("/rest")
 public class TestBean extends Application {

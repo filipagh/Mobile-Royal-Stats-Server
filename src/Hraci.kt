@@ -14,8 +14,6 @@ import javax.ws.rs.core.MediaType
 open class Hraci {
 
     @EJB
-
-
     private lateinit var hraci: PlayerI
 
     @GET

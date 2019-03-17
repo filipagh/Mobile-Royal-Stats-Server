@@ -157,7 +157,7 @@
                         <password>sa</password>
                     </security>
                 </datasource>
-                <datasource jta="true" jndi-name="java:jboss/datasources/mobile_royal" pool-name="movile_royal" enabled="true" use-java-context="true" use-ccm="true">
+                <datasource jta="true" jndi-name="java:jboss/datasources/mobile_royal" pool-name="mobile_royal" enabled="true" use-java-context="true" use-ccm="true">
                     <connection-url>jdbc:mysql://localhost:3306/mobile_royal</connection-url>
                     <driver>mysql</driver>
                     <transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>

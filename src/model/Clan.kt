@@ -21,9 +21,9 @@ class Clan : Serializable {
     var gameId: String? = null
 
     @OneToMany
-    var users : List<User> = ArrayList()
+    var users : MutableSet<User> = HashSet()
 
     @OneToMany
-    var conditions : List<Condition> = ArrayList()
+    var conditions : MutableSet<Condition> = HashSet()
 
 }
