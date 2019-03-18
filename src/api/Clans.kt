@@ -1,8 +1,9 @@
 package api
 
+import api.views.ClanView
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
-import model.Clan
+import model.User
 import utils.auth.AuthUtilsI
 import utils.auth.Role
 import utils.auth.Secured
@@ -20,13 +21,10 @@ import javax.ws.rs.core.Response
 @Path("/clans")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-@Secured(Role.Admin, Role.Coleader, Role.Leader, Role.User)
 open class Clans {
 
     @PersistenceContext(unitName = "sql")
     private lateinit var manager: EntityManager
-//    @PersistenceContext(unitName = "sql")
-//    private lateinit var session: Session
 
     @Resource
     private lateinit var userTransaction: UserTransaction
@@ -37,9 +35,11 @@ open class Clans {
     @ApiOperation(value = "Create new clan ", notes = "ID is ignored (should be removed)")
     @POST
     @Path("/")
-    open fun create(clan : Clan, @HeaderParam("Authorization") apiKey: String) : Clan {
+    @Secured(Role.Admin, Role.User)
+    open fun create(clanView : ClanView, @HeaderParam("Authorization") apiKey: String) : ClanView {
         val factory = Validation.buildDefaultValidatorFactory()
         val validator = factory.validator
+        val clan = clanView.toClan(manager)
         val violations = validator.validate(clan)
         if (!violations.isEmpty()) {
             throw ApiException(400, "ZLE")
@@ -47,24 +47,53 @@ open class Clans {
 
         val user = auth.findUserByApiKey(apiKey)
         clan.users.add(user)
-        user.role = Role.Leader
         clan.id = null
+        user.role = Role.Leader
         userTransaction.begin()
         manager.persist(clan)
-        manager.persist(user)
+        user.clan = clan
+        manager.merge(user)
         userTransaction.commit()
-        return clan
+        return ClanView(clan)
     }
 
     @ApiOperation(value = "Delete clan ", notes = "ID is ignored (should be removed)")
     @DELETE
-    @Path("/{id}")
-    open fun delete(@PathParam("id") id : Int) : Response {
-        val clan: Clan = manager.find(Clan::class.java, id) ?: return Response.status(Response.Status.NOT_FOUND).build()
+    @Path("/")
+    @Secured(Role.Admin, Role.Leader)
+    open fun delete(@HeaderParam("Authorization") apiKey: String) : Response {
         userTransaction.begin()
+        val user = auth.findUserByApiKey(apiKey)
+        //val clan: Clan? = manager.find(Clan::class.java, user.clan)
+        if (user.clan == null) {
+            userTransaction.commit()
+            return Response.status(Response.Status.NOT_FOUND).build()
+        }
+        val clan = user.clan
+        user.role = Role.User
+        user.clan = null
+        manager.merge(user)
         manager.remove(clan)
         userTransaction.commit()
         return Response.ok().build()
+    }
+
+    @ApiOperation(value = "Get user clan ", notes = "ID is ignored (should be removed)")
+    @GET
+    @Path("/")
+    @Secured(Role.Admin, Role.Leader, Role.User, Role.Coleader)
+    open fun myClan(@HeaderParam("Authorization") apiKey: String) : ClanView {
+        val select = "Select u from User u JOIN FETCH u.clan c LEFT JOIN FETCH c.users LEFT JOIN FETCH c.conditions WHERE u.apiKey = \'$apiKey\' "
+        val response = manager.createQuery(select)
+        val result = response.resultList
+        if (result.isEmpty()) {
+            throw ApiException(404, "Clan not found")
+        }
+        val user = result[0] as User
+        if (user.clan == null) {
+            throw ApiException(404, "Clan not found")
+        }
+        return ClanView(user.clan)
     }
 
 }
