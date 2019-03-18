@@ -51,7 +51,7 @@ open fun info(@PathParam("id") id: String,@HeaderParam("Authorization") apiKey: 
         userTransaction.commit()
     }
 
-
+    @Throws(Exception::class)
     override fun findUserByApiKey(apiKey: String): User {
 
         val select = "Select u from User u WHERE u.apiKey = \'$apiKey\'"
@@ -67,14 +67,17 @@ open fun info(@PathParam("id") id: String,@HeaderParam("Authorization") apiKey: 
 
         val select = "Select u from User u WHERE u.apiKey = \'$apiKey\'"
         val response = manager.createQuery(select)
-        val result = response.getResultList()
+        val result = response.resultList
+        if (result.isEmpty()) {
+            throw Exception("Unauthorized")
+        }
         if (result!!.size > 1) {
             throw Exception("we find duplicity apikey. please generate new (auth)")
         }
         return result[0] as User
     }
 
-
+    @Throws(Exception::class)
     override fun checkUserRolePermission(apiKey: String, allowedRoles: List<Role>): Boolean {
         val user = findUserByApiKey(apiKey)
         return user.role in allowedRoles
@@ -83,7 +86,7 @@ open fun info(@PathParam("id") id: String,@HeaderParam("Authorization") apiKey: 
 
     override fun createUserPasswordHash(user: User) : User {
         //TODO otestovt null pass aj ""
-        if (user.password.isNullOrEmpty()) {
+        if (user.password.isEmpty()) {
             throw Exception("user password is empty!!!")
         }
         user.salt = BCrypt.gensalt()
@@ -111,11 +114,29 @@ open fun info(@PathParam("id") id: String,@HeaderParam("Authorization") apiKey: 
 
     override fun validatePassword(password: String, user: User): Boolean {
         //TODO otestovt null pass aj ""
-        if (user.password.isNullOrEmpty()) {
+        if (user.password.isEmpty()) {
             throw Exception("user password is empty!!!")
         }
-        return BCrypt.hashpw(password, user.salt).equals(user.password)
+        return BCrypt.hashpw(password, user.salt) == user.password
     }
+
+    override fun authenticateUser(email: String, password: String): User? {
+        val select = "Select u from User u WHERE u.email = \'$email\'"
+        val response = manager.createQuery(select)
+        val resultList = response.resultList
+
+
+        for (item in resultList!!)
+        {
+            val dbUser: User = item as User
+            if (validatePassword(password, dbUser))
+            {
+                return dbUser  // we find user and password is OK (auth OK)
+            }
+        }
+        return null
+    }
+
 
 }
 

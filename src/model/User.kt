@@ -8,7 +8,6 @@ import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
 @Entity
-@Table(name= "users")
 class User : Serializable {
 
     companion object {
@@ -21,6 +20,9 @@ class User : Serializable {
     var id: Int? = null
     var name: String? = null
     var gameId: String? = null
+    var role: Role? = null
+    @ManyToOne
+    var clan: Clan? = null
 
     @Column(unique=true)
     @Email
@@ -28,14 +30,11 @@ class User : Serializable {
     @NotNull
     lateinit var email: String
 
-    @NotNull(message = "Name cannot be null")
-    @NotEmpty(message = "Name cannot be null")
-    var password: String? = null
+    @NotNull(message = "Password cannot be null")
+    @NotEmpty(message = "Password cannot be empty")
+    var password: String = ""
     var salt: String? = null
-
     @Column(unique=true)
     var apiKey: String? = null
-    var role: Role? = null
-
 }
 

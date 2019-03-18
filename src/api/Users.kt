@@ -1,5 +1,6 @@
 package api
 
+import api.views.UserView
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import model.User
@@ -37,10 +38,25 @@ open class Users {
         return "{\"nieco\": \"ine\"}"
     }
 
+    @ApiOperation(value = "Login user", notes = "ID is ignored (should be removed)")
+    @POST
+    @Path("/login")
+    open fun login(user : User) : UserView {
+
+        if (user.email.isEmpty() or user.password.isEmpty())
+        {
+            throw ApiException(400, "email or pass is empty")
+        }
+
+        val authenticated : User = auth.authenticateUser(user.email, user.password) ?: throw ApiException(401, "Wrong username/password")
+
+        return UserView(authenticated)
+    }
+
     @ApiOperation(value = "Create new user (registration)", notes = "ID is ignored (should be removed)")
     @POST
     @Path("/")
-    open fun create(user : User) : User {
+    open fun create(user : User) : UserView {
         val factory = Validation.buildDefaultValidatorFactory()
         val validator = factory.validator
         val violations = validator.validate(user)
@@ -49,6 +65,7 @@ open class Users {
         }
 
         user.id = null
+        user.clan = null
         //TODO setovat spravnu rolu
         user.role= Role.User
         auth.createUserPasswordHash(user)
@@ -62,10 +79,7 @@ open class Users {
 //        } catch (e: Exception) {
 //            throw ApiException(400,"Duplicate entry")
 //        }
-        // fild co nechceme vracat
-        user.salt=null
-        user.password=null
-        return user
+        return UserView(user)
     }
 
 
