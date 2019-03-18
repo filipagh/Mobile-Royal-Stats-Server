@@ -11,4 +11,5 @@ interface AuthUtilsI {
     fun createPasswordHash(password: String, salt: String): String
     fun validatePassword(password: String, user: User): Boolean
     fun findUserByApiKey(apiKey: String): User
+    fun removeUserFromClan(user: User)
 }

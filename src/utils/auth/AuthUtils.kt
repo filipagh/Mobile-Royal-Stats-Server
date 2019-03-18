@@ -1,16 +1,22 @@
 package utils.auth
 
+import model.Clan
 import model.User
 import org.mindrot.jbcrypt.BCrypt
+import javax.annotation.Resource
 import javax.ejb.Stateless
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
+import javax.transaction.UserTransaction
 
 @Stateless
 open class AuthUtils : AuthUtilsI {
 
     @PersistenceContext(unitName = "sql")
     private lateinit var manager: EntityManager
+
+    @Resource
+    private lateinit var userTransaction: UserTransaction
 
 /*
  ukazka ako zabezpecit endpoint
@@ -34,9 +40,30 @@ open fun info(@PathParam("id") id: String,@HeaderParam("Authorization") apiKey: 
 }
 */
 
+    override fun removeUserFromClan(user: User) {
+        var clan: Clan = manager.find(Clan::class.java, user.clanID)
+        userTransaction.begin()
+        if (clan.users.remove(user)) {
+            user.clanID = null
+            manager.persist(clan)
+            manager.persist(user)
+        }
+        userTransaction.commit()
+    }
 
 
     override fun findUserByApiKey(apiKey: String): User {
+
+        val select = "Select u from User u WHERE u.apiKey = \'$apiKey\'"
+        val response = manager.createQuery(select)
+        val result = response.getResultList()
+        if (result!!.size > 1) {
+            throw Exception("we find duplicity apikey. please generate new (auth)")
+        }
+        return result[0] as User
+    }
+
+    override fun findClanByClanKey(apiKey: String): User {
 
         val select = "Select u from User u WHERE u.apiKey = \'$apiKey\'"
         val response = manager.createQuery(select)

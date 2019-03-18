@@ -26,4 +26,8 @@ class Clan : Serializable {
     @OneToMany
     var conditions : MutableSet<Condition> = HashSet()
 
+    @NotNull
+    @NotEmpty
+    var clanKey : String? = null
+
 }

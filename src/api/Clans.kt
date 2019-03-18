@@ -3,6 +3,7 @@ package api
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import model.Clan
+import model.User
 import utils.auth.AuthUtilsI
 import utils.auth.Role
 import utils.auth.Secured
@@ -33,6 +34,43 @@ open class Clans {
 
     @EJB
     private lateinit var auth : AuthUtilsI
+
+    @ApiOperation(value = "Join Clan", notes = "ID is ignored (should be removed)")
+    @GET
+    @Secured(Role.Admin, Role.Coleader, Role.Leader, Role.User)
+    @Path("/")
+    open fun joinClan(clan : Clan, @HeaderParam("Authorization") apiKey: String) : Clan {
+        val factory = Validation.buildDefaultValidatorFactory()
+        val validator = factory.validator
+        val violations = validator.validate(clan)
+        if (!violations.isEmpty()) {
+            throw ApiException(400, "ZLE")
+        }
+
+        val user: User = auth.findUserByApiKey(apiKey)
+        //TODO overenie klanu
+        if (user.clanID != null) {
+            throw ApiException(400, "User is in clan ${clan.name}")
+        }
+
+
+
+
+
+
+
+
+        clan.users.add(user)
+        user.role = Role.Leader
+        clan.id = null
+        userTransaction.begin()
+        manager.persist(clan)
+        manager.persist(user)
+        userTransaction.commit()
+        return clan
+    }
+
+
 
     @ApiOperation(value = "Create new clan ", notes = "ID is ignored (should be removed)")
     @POST
