@@ -9,6 +9,7 @@ open class ClanView(clan: Clan? = null) {
     var id = clan?.id
     var name = clan?.name
     var gameId = clan?.gameId
+    var token = clan?.token
     var userIds: Set<Int?>? = clan?.users?.map { user -> user.id }?.toSet()
     var conditionIds = clan?.conditions?.map { condition -> ConditionView(condition) }?.toSet()
 
@@ -17,6 +18,7 @@ open class ClanView(clan: Clan? = null) {
         clan.id = id
         clan.name = name
         clan.gameId = gameId
+        clan.token = token
 
         if (!userIds.isNullOrEmpty()) {
             val select = manager.createQuery("Select u from User u WHERE u.id IN (:ids)")
