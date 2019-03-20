@@ -4,7 +4,7 @@ import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import model.Tag
 import model.UserStat
-import model.aa
+import model.jsonToObject
 import royal.PlayerI
 import javax.ejb.EJB
 import javax.ws.rs.Consumes
@@ -28,11 +28,7 @@ open class Players {
     @POST
     @Path("/info")
     open fun info(tag : Tag): UserStat {
-
-
-        val a = players.dajHraca(tag.tag!!)
-        val player = aa(a)
-        val b = 6
+        val player = jsonToObject(players.dajHraca(tag.tag!!))
         return player
     }
 }

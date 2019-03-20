@@ -30,7 +30,7 @@ open class ClanTest: Serializable{
 
 
 
-fun aa(json: String): UserStat {
+fun jsonToObject(json: String): UserStat {
     val mapper = ObjectMapper()
     return mapper.readValue(json, UserStat::class.java)
 
