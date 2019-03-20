@@ -16,3 +16,5 @@ target/
 /.idea/dataSources/10e169ef-71c4-41ce-a23b-498dbedb2a6a/storage_v2/_src_/schema/crs.5IEBAA.meta
 /.idea/dataSources/10e169ef-71c4-41ce-a23b-498dbedb2a6a.xml
 /.idea/httpRequests/http-requests-log.http
+/Mobile-Royal-Stats-Server.iml
+/.idea/libraries/Maven__javax_validation_validation_api_2_0_1_Final.xml

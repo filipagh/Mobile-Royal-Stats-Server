@@ -4,6 +4,7 @@ import api.views.ClanView
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import model.User
+import model.loadClanByToken
 import utils.auth.AuthUtilsI
 import utils.auth.Role
 import utils.auth.Secured
@@ -32,6 +33,8 @@ open class Clans {
     @EJB
     private lateinit var auth : AuthUtilsI
 
+
+
     @ApiOperation(value = "Create new clan ", notes = "ID is ignored (should be removed)")
     @POST
     @Path("/")
@@ -54,6 +57,7 @@ open class Clans {
         user.clan = clan
         manager.merge(user)
         userTransaction.commit()
+
         return ClanView(clan)
     }
 
@@ -96,4 +100,41 @@ open class Clans {
         return ClanView(user.clan)
     }
 
+
+    @ApiOperation(value = "Join Clan", notes = "ID is ignored (should be removed)")
+    @POST
+    @Secured(Role.Admin, Role.User)
+    @Path("/token")
+    open fun joinClan(clanView : ClanView, @HeaderParam("Authorization") apiKey: String) : ClanView {
+        val factory = Validation.buildDefaultValidatorFactory()
+        val validator = factory.validator
+        val clan = clanView.toClan(manager)
+        val violations = validator.validate(clan)
+        if (!violations.isEmpty()) {
+            throw ApiException(400, "ZLE")
+        }
+
+
+        val user: User = auth.findUserByApiKey(apiKey)
+        //TODO overenie klanu
+        if (user.clan != null) {
+            throw ApiException(400, "User is in clan ${clan.name}")
+        }
+        var joinClan = loadClanByToken(clan.token!!, manager)
+
+        if (joinClan == null) {
+            throw ApiException(404, "Clan not found ${clan.name}")
+        }
+
+        //TODO  ZISTIT gameID hracov z royalapi z klanu a overit ci user ma take gameID
+
+        joinClan.users.add(user)
+        user.clan = joinClan
+
+        userTransaction.begin()
+        manager.merge(joinClan)
+        manager.merge(user)
+        userTransaction.commit()
+        return ClanView(joinClan)
+    }
 }

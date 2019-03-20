@@ -35,6 +35,7 @@ open fun info(@PathParam("id") id: String,@HeaderParam("Authorization") apiKey: 
 */
 
 
+
     @Throws(Exception::class)
     override fun findUserByApiKey(apiKey: String): User {
 

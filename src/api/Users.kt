@@ -10,6 +10,7 @@ import javax.annotation.Resource
 import javax.ejb.EJB
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
+import javax.persistence.RollbackException
 import javax.transaction.UserTransaction
 import javax.validation.Validation
 import javax.ws.rs.*
@@ -72,13 +73,13 @@ open class Users {
         auth.createUserApiKey(user)
 
         // ulozime usra do db a akceptujeme ho
-//        try {
+        try {
             userTransaction.begin()
             manager.persist(user)
             userTransaction.commit()
-//        } catch (e: Exception) {
-//            throw ApiException(400,"Duplicate entry")
-//        }
+        } catch (e: RollbackException) {
+            throw ApiException(400,"Duplicate entry")
+        }
         return UserView(user)
     }
 

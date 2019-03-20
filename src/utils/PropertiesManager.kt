@@ -22,7 +22,7 @@ class PropertiesManager
         prop.load(impStream)
 
         impStream.close()
-        prop.getProperty("aa")
+        prop.getProperty("jsonToObject")
     }
 
     fun getDbName()

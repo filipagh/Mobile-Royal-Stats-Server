@@ -25,4 +25,23 @@ class Clan : Serializable {
     @OneToMany
     var conditions : MutableSet<Condition> = HashSet()
 
+    @NotNull
+    @NotEmpty
+    var token : String? = null
+}
+
+fun loadClanByID(id: Int, manager: EntityManager): Clan? {
+    //      val selectt = "Select u from User u JOIN FETCH u.clan c LEFT JOIN FETCH c.users LEFT JOIN FETCH c.conditions WHERE u.apiKey = \'$apiKey\' "
+    val select = "SELECT c FROM Clan c LEFT JOIN FETCH c.users LEFT JOIN FETCH c.conditions WHERE c.id = \'$id\'"
+    val response = manager.createQuery(select)
+    val result = response.resultList
+    return result[0] as Clan
+}
+
+fun loadClanByToken(token: String,manager: EntityManager): Clan? {
+    //      val selectt = "Select u from User u JOIN FETCH u.clan c LEFT JOIN FETCH c.users LEFT JOIN FETCH c.conditions WHERE u.apiKey = \'$apiKey\' "
+    val select = "SELECT c FROM Clan c LEFT JOIN FETCH c.users LEFT JOIN FETCH c.conditions WHERE c.token = \'$token\'"
+    val response = manager.createQuery(select)
+    val result = response.resultList
+    return result[0] as Clan
 }

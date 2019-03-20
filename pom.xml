@@ -30,6 +30,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>javax.json.bind</groupId>
+            <artifactId>javax.json.bind-api</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
             <groupId>javax.ejb</groupId>
             <artifactId>ejb-api</artifactId>
             <version>3.0</version>
