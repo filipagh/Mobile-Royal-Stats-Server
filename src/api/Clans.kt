@@ -3,8 +3,8 @@ package api
 import api.views.ClanView
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
-import model.User
-import model.loadClanByToken
+import model.*
+import royal.ClanI
 import utils.auth.AuthUtilsI
 import utils.auth.Role
 import utils.auth.Secured
@@ -33,6 +33,16 @@ open class Clans {
     @EJB
     private lateinit var auth : AuthUtilsI
 
+    @EJB
+    private lateinit var clan: ClanI
+
+    @ApiOperation(value = "Get Clan Players", notes = "ID is ignored (should be removed)")
+    @POST
+    @Path("/players")
+    open fun info(tag : Tag): ClanStats {
+        val clanStats = jsonToClanStats(clan.loadClanStats(tag.tag.toString()))
+        return clanStats
+    }
 
 
     @ApiOperation(value = "Create new clan ", notes = "ID is ignored (should be removed)")
