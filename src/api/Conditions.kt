@@ -3,6 +3,7 @@ package api
 import api.views.ConditionView
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
+import model.Clan
 import model.Condition
 import model.User
 import utils.auth.AuthUtilsI
@@ -97,8 +98,11 @@ open class Conditions {
         val user = result[0] as User
         val condition = conditionView.toCondition(manager)
         if (user.clan == null || user.clan!!.id == null) {
-            throw ApiException(403, "Neautorizovany")
+            throw ApiException(403, "Unauthorized")
         }
+//        if (user.clan!!.id != condition.clan!!.id) {
+//            throw ApiException(403, "Unauthorized")
+//        }
         condition.clan = user.clan
         val factory = Validation.buildDefaultValidatorFactory()
         val validator = factory.validator
@@ -115,6 +119,7 @@ open class Conditions {
 
     @ApiOperation(value = "Delete condition", notes = "sad")
     @DELETE
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("/{id}")
     open fun delete(@PathParam("id") id : Int, @HeaderParam("Authorization") apiKey: String) : Response {
         val user = auth.findUserByApiKey(apiKey)
@@ -127,10 +132,31 @@ open class Conditions {
             userTransaction.commit()
             throw ApiException(403, "Unauthorized")
         }
-
+        val clan : Clan = manager.find(Clan::class.java, condition.clan!!.id)
+        clan.conditions.remove(condition)
+        manager.merge(clan)
         manager.remove(condition)
         userTransaction.commit()
         return Response.ok().build()
+    }
+
+    @ApiOperation(value = "Get condition", notes = "sad")
+    @GET
+    @Path("/{id}")
+    open fun get(@PathParam("id") id : Int, @HeaderParam("Authorization") apiKey: String) : ConditionView {
+        val user = auth.findUserByApiKey(apiKey)
+        if (user.clan == null) {
+            throw ApiException(403, "Unauthorized")
+        }
+        userTransaction.begin()
+        val condition: Condition = manager.find(Condition::class.java, id) ?: throw ApiException(404, "Not found")
+        if (user.clan!!.id != condition.clan!!.id) {
+            userTransaction.commit()
+            throw ApiException(403, "Unauthorized")
+        }
+
+        userTransaction.commit()
+        return ConditionView(condition)
     }
 
 }
