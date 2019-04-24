@@ -7,10 +7,10 @@ import javax.validation.constraints.NotNull
 
 @Entity
 class Clan : Serializable {
+    //    @SequenceGenerator(name = "clans_id", sequenceName = "clans_id_seq", allocationSize = 1)
 
     @Id
-    @javax.persistence.GeneratedValue(strategy = GenerationType.AUTO, generator = "users_id")
-    @SequenceGenerator(name = "clans_id", sequenceName = "clans_id_seq", allocationSize = 1)
+    @javax.persistence.GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
     @NotEmpty
     @NotNull

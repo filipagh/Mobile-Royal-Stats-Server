@@ -8,10 +8,9 @@ import javax.validation.constraints.NotNull
 @Entity
 @Table(name="conditions")
 class Condition : Serializable {
-
+//    @SequenceGenerator(name = "users_id", sequenceName = "users_id_seq", allocationSize = 1)
     @Id
-    @javax.persistence.GeneratedValue(strategy = GenerationType.AUTO, generator = "users_id")
-    @SequenceGenerator(name = "users_id", sequenceName = "users_id_seq", allocationSize = 1)
+    @javax.persistence.GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
     var name: String? = null
     @NotEmpty
