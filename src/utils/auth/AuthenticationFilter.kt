@@ -15,24 +15,19 @@ import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.Provider
 
+/**
+ * riesenie autentifikacie na servery
+ */
 @Secured
 @Provider
 @Priority(Priorities.AUTHORIZATION)
 open class AuthorizationFilter: ContainerRequestFilter {
-
-//    @Context
-//    open var securityContext: SecurityContext? = null
-
 
     @Context
     private val resourceInfo: ResourceInfo? = null
 
     @EJB
     private lateinit var auth : AuthUtilsI
-
-//TODO
-
-
 
     @Throws(IOException::class)
     override fun filter(requestContext: ContainerRequestContext) {
@@ -68,8 +63,6 @@ open class AuthorizationFilter: ContainerRequestFilter {
                 checkPermissions(methodRoles,token)
             }
 
-           // userAuthenticatedEvent.fire(username);
-
         } catch (e: Exception) {
             requestContext.abortWith(
                     Response.status(Response.Status.FORBIDDEN).build())
@@ -77,17 +70,7 @@ open class AuthorizationFilter: ContainerRequestFilter {
 
     }
 
-
-    private fun isTokenBasedAuthentication(authorizationHeader: String?): Boolean {
-
-        // Check if the Authorization header is valid
-        // It must not be null and must be prefixed with "Bearer" plus a whitespace
-        // The authentication scheme comparison must be case-insensitive
-        return authorizationHeader != null
-    }
-
     private fun abortWithUnauthorized(requestContext: ContainerRequestContext) {
-
         // request neobsahuje nas API token
         requestContext.abortWith(
                 Response.status(Response.Status.UNAUTHORIZED).build())

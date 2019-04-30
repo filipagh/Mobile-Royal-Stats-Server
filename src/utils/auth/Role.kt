@@ -12,6 +12,10 @@ const val ROLE_USER = 2
 @Target(AnnotationTarget.FUNCTION,AnnotationTarget.TYPE, AnnotationTarget.CLASS)
 annotation class Secured(vararg val value: Role = arrayOf())
 
+
+/**
+ * zoznam roly pouzivatelov
+ */
 enum class Role
 {
     Admin,

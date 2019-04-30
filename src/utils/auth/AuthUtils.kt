@@ -6,35 +6,14 @@ import javax.ejb.Stateless
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 
+/**
+ *  utils autentifikacie na servery
+ */
 @Stateless
 open class AuthUtils : AuthUtilsI {
 
     @PersistenceContext(unitName = "sql")
     private lateinit var manager: EntityManager
-
-/*
- ukazka ako zabezpecit endpoint
-
-@GET
-
-    //         zadat role od akej urovne je pristupne (kuk) Role
-@Secured(Role.Leader)
-
-@Path("/info/{id}")
-@Produces(MediaType.APPLICATION_JSON)
-
-    //         ako parameter treba zadat @HeaderParam("Authorization") apiKey: String
-open fun info(@PathParam("id") id: String,@HeaderParam("Authorization") apiKey: String): String {
-
-    // Extract the token from the Authorization header
-    val token = apiKey.substring(AUTHENTICATION_SCHEME.length).trim()
-
-
-
-}
-*/
-
-
 
     @Throws(Exception::class)
     override fun findUserByApiKey(apiKey: String): User {
@@ -59,7 +38,6 @@ open fun info(@PathParam("id") id: String,@HeaderParam("Authorization") apiKey: 
 
 
     override fun createUserPasswordHash(user: User) : User {
-        //TODO otestovt null pass aj ""
         if (user.password.isEmpty()) {
             throw Exception("user password is empty!!!")
         }
@@ -69,8 +47,6 @@ open fun info(@PathParam("id") id: String,@HeaderParam("Authorization") apiKey: 
     }
 
     override fun createUserApiKey(user: User) : User {
-        //TODO kontrola validnosti casova api kluca
-
         if (user.apiKey.isNullOrEmpty()) {
             user.apiKey = BCrypt.gensalt(15)
         }
@@ -79,7 +55,6 @@ open fun info(@PathParam("id") id: String,@HeaderParam("Authorization") apiKey: 
 
 
     override fun createPasswordHash(password: String, salt: String): String {
-        //TODO otestovt null pass aj ""
         if (password.isEmpty()) {
             throw Exception("user password is empty!!!")
         }
@@ -87,7 +62,6 @@ open fun info(@PathParam("id") id: String,@HeaderParam("Authorization") apiKey: 
     }
 
     override fun validatePassword(password: String, user: User): Boolean {
-        //TODO otestovt null pass aj ""
         if (user.password.isEmpty()) {
             throw Exception("user password is empty!!!")
         }
