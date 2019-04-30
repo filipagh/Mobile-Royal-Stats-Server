@@ -7,6 +7,9 @@ import javax.validation.constraints.Email
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
+/**
+ * entita usera
+ */
 @Entity
 class User : Serializable {
 
@@ -14,9 +17,6 @@ class User : Serializable {
         val DB_NAME = "user"
     }
 
-
-
-//    @SequenceGenerator(name = "users_id", sequenceName = "users_id_seq", allocationSize = 1)
     @Id
     @javax.persistence.GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null

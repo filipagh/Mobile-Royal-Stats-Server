@@ -5,9 +5,11 @@ import javax.persistence.*
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
+/**
+ * entita clanu
+ */
 @Entity
 class Clan : Serializable {
-    //    @SequenceGenerator(name = "clans_id", sequenceName = "clans_id_seq", allocationSize = 1)
 
     @Id
     @javax.persistence.GeneratedValue(strategy = GenerationType.IDENTITY)

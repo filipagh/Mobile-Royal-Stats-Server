@@ -27,7 +27,7 @@ open class Players {
     @ApiOperation(value = "Get Player Stats", notes = "ID is ignored (should be removed)")
     @POST
     @Path("/info")
-    open fun info(tag : Tag): UserStat {
+    open fun info(tag : Tag): UserStat? {
         val player = jsonToObject(players.dajHraca(tag.tag!!))
         return player
     }

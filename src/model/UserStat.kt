@@ -2,11 +2,16 @@ package model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.ObjectMapper
+import utils.PropertiesManager
+import java.io.IOException
 import java.io.Serializable
 import java.net.URL
+import java.util.logging.Logger
 import javax.json.bind.annotation.JsonbProperty
 
-
+/**
+ * parsovanie jsonu do objektu (z royalapi)
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 open class UserStat: Serializable {
     var name: String? = null
@@ -42,26 +47,46 @@ open class UserStat: Serializable {
 
 }
 
+/**
+ * dodatocna upraa objektu a tahanie dat z html ktore niesu v api
+ * @param json of playerStats
+ * @return playerStats
+ */
+fun jsonToObject(json: String): UserStat? {
+    val log = Logger.getLogger("JsonMapper")
 
-fun jsonToObject(json: String): UserStat {
+    val playerstat:UserStat
+
     val mapper = ObjectMapper()
-    var playerstat = mapper.readValue(json, UserStat::class.java)
-
+    try {
+        playerstat = mapper.readValue(json, UserStat::class.java)
+    } catch (e: Exception) {
+        log.warning(e.printStackTrace().toString())
+        return null
+    }
     // parse data from html // LEBO TO NIEJE V API................
     val urlString = "https://royaleapi.com/inc/player/cw_history?player_tag=${playerstat.tag}"
     val url = URL(urlString)
-    val conn = url.openConnection()
-    conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11")
 
-    // spracovanie http response do str
-    var rider =  conn.getInputStream().bufferedReader()
-    var result = StringBuffer()
-    do {
-        val line = rider.readLine()
-        if(line != null) {
-            result.append(line)
-        }
-    } while (line != null)
+    val result = StringBuffer()
+
+    try {
+        val conn = url.openConnection()
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11")
+
+        // spracovanie http response do str
+        val rider = conn.getInputStream().bufferedReader()
+        do {
+            val line = rider.readLine()
+            if (line != null) {
+                result.append(line)
+            }
+        } while (line != null)
+    } catch (e: IOException) {
+        log.warning(e.printStackTrace().toString())
+        return null
+    }
+
 
     // parsovanie winPercent
     val regex = Regex("<td>[0-9]+%</td>")
@@ -95,6 +120,8 @@ fun jsonToObject(json: String): UserStat {
     //coretion data
     playerstat.games!!.winsPercent = (playerstat.games!!.winsPercent!!.toDouble()  * 100).toInt().toString()
 
+
+    log.info("LOAD playerStats royalApi endpoint with player tag:${playerstat.tag}")
 
     return playerstat
 }

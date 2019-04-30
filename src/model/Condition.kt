@@ -5,6 +5,9 @@ import javax.persistence.*
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
+/**
+ * entita na podmienka
+ */
 @Entity
 @Table(name="conditions")
 class Condition : Serializable {

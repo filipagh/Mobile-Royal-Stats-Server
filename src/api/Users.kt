@@ -16,7 +16,9 @@ import javax.validation.Validation
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
-
+/**
+ * rest api volania
+ */
 @Api(value = "Users")
 @Path("/users")
 @Consumes(MediaType.APPLICATION_JSON)
